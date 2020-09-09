@@ -22,7 +22,8 @@ in depression.) -classify if the brain is hearing music or not
 #### Objective: Classify Rees
 Yes this has been done before and probably is done often, however, I am personally interested in classifying my own dog so I can finally answer everyone's question about what kind of breed she looks like at least. 
 
-![picture]
+![picture](rees.jpeg)
+
 
 #### the data:
 
