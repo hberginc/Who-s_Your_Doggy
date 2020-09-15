@@ -19,3 +19,27 @@ def show_imgs(direct, num_imgs=20):
         plt.axis('off')
 
 
+def plot_acc_loss_per_epoch(fit_model, epochs=10):
+    acc = fit_model.history['accuracy']
+    val_acc = fit_model.history['val_accuracy']
+
+    loss=fit_model.history['loss']
+    val_loss=fit_model.history['val_loss']
+
+    epochs_range = range(epochs)
+
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, acc, label='Training Accuracy')
+    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+    plt.legend()
+    plt.title('Training and Validation Accuracy')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, loss, label='Training Loss')
+    plt.plot(epochs_range, val_loss, label='Validation Loss')
+    plt.legend()
+    plt.title('Training and Validation Loss')
+    plt.savefig('train_acc_loss_basic.png')
+    plt.show()
+

@@ -1,11 +1,9 @@
-# Transfer Learning use the VGG16 architecture, pre-trained on the ImageNet dataset
-
 from tensorflow import keras
 from tensorflow.keras.preprocessing.image import (ImageDataGenerator, 
                                                   array_to_img, img_to_array, 
                                                   load_img) 
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D, BatchNormalization
 from tensorflow.keras.layers import Activation, Dropout, Flatten, Dense
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
@@ -22,13 +20,16 @@ warnings.filterwarnings("ignore")
 import matplotlib.image as mpimg
 import pathlib
 from tensorflow.keras.applications.xception import preprocess_input
-from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
+import tensorflow as tf
+from tensorflow.keras.applications import VGG16, Xception
+from datetime import datetime
+import datetime
+import time
 
 
 
-
-
-def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', batch_size = 16):
+def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', holdout_dir =  '../../images/Images/test',  batch_size = 16):
     # this is the augmentation configuration we will use for training
     train_datagen = ImageDataGenerator(
             rescale=1./255,
@@ -55,9 +56,19 @@ def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../i
             target_size=(150, 150),
             batch_size=batch_size,
             class_mode='categorical')
-    return train_generator, validation_generator
 
-def basic_cnn():
+    h_out = ImageDataGenerator(rescale=1./255)
+    # this is a similar generator, for validation data
+    holdout_generator = h_out.flow_from_directory(
+            holdout_dir,
+            target_size=(150, 150),
+            batch_size=batch_size,
+            class_mode='categorical')
+
+    return train_generator, validation_generator, holdout_generator
+
+
+def basic_cnn(n_categs = 5):
     model = Sequential()
     model.add(Conv2D(32, (3, 3), input_shape=(150, 150, 3)))
     model.add(Activation('relu'))
@@ -74,7 +85,7 @@ def basic_cnn():
     model.add(Dense(64))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(5))
+    model.add(Dense(n_categs))
     model.add(Activation('softmax'))
 
     loss_fn = keras.losses.CategoricalCrossentropy(
@@ -88,7 +99,58 @@ def basic_cnn():
     return model
 
 
-def transer_model():
+def basic_transfer_model(input_size, n_categories, weights = 'imagenet', trans_model = VGG16):
+        # note that the "top" is not included in the weights below
+        base_model = trans_model(weights=weights,
+                          include_top=False,
+                          input_shape=input_size)
+        
+        model = base_model.output
+        
+        # add new head
+        model = GlobalAveragePooling2D()(model)
+        predictions = Dense(n_categories, activation='softmax')(model)
+        model = Model(inputs=base_model.input, outputs=predictions)
+        return model
+
+def create_new_transfer_model(input_size, n_categories, weights = 'imagenet', trans_model = Xception):
+        # note that the "top" is not included in the weights below
+        base_model = trans_model(weights=weights,
+                          include_top=False,
+                          input_shape=input_size)
+        
+        model = base_model.output
+
+        model = GlobalAveragePooling2D()(model)
+        model = BatchNormalization()(model)
+        model = Dense(100, activation='relu')(model)
+        model = BatchNormalization()(model)
+
+        output = Dense(n_categories, activation='softmax')(model)
+        model = Model(inputs=base_model.input, outputs=output)
+        return model
+
+
+def print_model_properties(model, indices = 0):
+     for i, layer in enumerate(model.layers[indices:]):
+        print("Layer {} | Name: {} | Trainable: {}".format(i+indices, layer.name, layer.trainable))
+
+def change_trainable_layers(model, trainable_index):
+    for layer in model.layers[:trainable_index]:
+        layer.trainable = False
+    for layer in model.layers[trainable_index:]:
+        layer.trainable = True
+        
+
+
+def create_callbacks(file_path = "./../logs-", patience = 3):
+    tensorboard = TensorBoard(log_dir= file_path+datetime.datetime.now().strftime("%m%d%Y%H%M%S"),
+                                histogram_freq=0,
+                                write_graph=False,
+                                update_freq='epoch')
+    early_stopping = EarlyStopping(restore_best_weights = True, patience = patience, monitor='val_loss')
+    
+    return tensorboard, early_stopping
 
 
 
@@ -97,14 +159,14 @@ def transer_model():
 if __name__ == '__main__':
 
 
-    train_generator, validation_generator = create_data_gens()
+    train_generator, validation_generator, holdout_generator = create_data_gens()
 
     #first basic model saved weights
     model = basic_cnn()
         #  Added for Tensorboard
     tensorboard = TensorBoard(log_dir='./logs',
                             histogram_freq=2,
-                            batch_size=batch_size,
+                            batch_size=16,
                             write_graph=True,
                             write_grads=True,
                             write_images=True,
