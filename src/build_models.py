@@ -11,7 +11,7 @@ from tensorflow.keras import backend as K
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+from tensorflow.keras.utils import plot_model
 import os
 
 import warnings
@@ -30,12 +30,23 @@ import time
 
 
 def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', holdout_dir =  '../../images/Images/test',  batch_size = 16):
-    # this is the augmentation configuration we will use for training
+    '''
+    this is the augmentation configuration we will use for training
+    PARAMS: train, val, holdout dirs are directories geared toward the storage of such data
+
+    all images are resized to (150,150)
+
+    RETURNS:
+    each image generator in order train, val, holdout
+   '''
     train_datagen = ImageDataGenerator(
             rescale=1./255,
-            shear_range=0.2,
+            rotation_range=40,
+            width_shift_range=0.2,
+            height_shift_range=0.2,
             zoom_range=0.2,
-            horizontal_flip=True)
+            horizontal_flip=True,
+            fill_mode='nearest')
 
     # this is the augmentation configuration we will use for testing:
     # only rescaling
@@ -45,7 +56,8 @@ def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../i
     # subfolers of 'data/train', and indefinitely generate
     # batches of augmented image data
     train_generator = train_datagen.flow_from_directory(
-            train_dir,  # this is the target directory
+            train_dir, 
+            shuffle=True, # this is the target directory
             target_size=(150, 150),  # all images will be resized to 150x150
             batch_size=batch_size,
             class_mode='categorical')  # since we use CategoricalCrossentropy loss, we need categorical labels
@@ -88,47 +100,42 @@ def basic_cnn(n_categs = 5):
     model.add(Dense(n_categs))
     model.add(Activation('softmax'))
 
-    loss_fn = keras.losses.CategoricalCrossentropy(
-        from_logits=False,
-        label_smoothing=0,
-        reduction="auto",
-        name="categorical_crossentropy",
-    )
 
-    model.compile(loss=loss_fn, optimizer='adam', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss=['categorical_crossentropy'], metrics=['accuracy', 'top_k_categorical_accuracy'])
+
     return model
 
 
 def basic_transfer_model(input_size, n_categories, weights = 'imagenet', trans_model = VGG16):
-        # note that the "top" is not included in the weights below
-        base_model = trans_model(weights=weights,
-                          include_top=False,
-                          input_shape=input_size)
-        
-        model = base_model.output
-        
-        # add new head
-        model = GlobalAveragePooling2D()(model)
-        predictions = Dense(n_categories, activation='softmax')(model)
-        model = Model(inputs=base_model.input, outputs=predictions)
-        return model
+    # note that the "top" is not included in the weights below
+    base_model = trans_model(weights=weights,
+                        include_top=False,
+                        input_shape=input_size)
+    
+    model = base_model.output
+    # add new head
+    model = GlobalAveragePooling2D()(model)
+    predictions = Dense(n_categories, activation='softmax')(model)
+    model = Model(inputs=base_model.input, outputs=predictions)
+    return model
 
 def create_new_transfer_model(input_size, n_categories, weights = 'imagenet', trans_model = Xception):
-        # note that the "top" is not included in the weights below
-        base_model = trans_model(weights=weights,
-                          include_top=False,
-                          input_shape=input_size)
-        
-        model = base_model.output
+    # note that the "top" is not included in the weights below
+    base_model = trans_model(weights=weights,
+                        include_top=False,
+                        input_shape=input_size)
+    
+    model = base_model.output
 
-        model = GlobalAveragePooling2D()(model)
-        model = BatchNormalization()(model)
-        model = Dense(100, activation='relu')(model)
-        model = BatchNormalization()(model)
+    model = GlobalAveragePooling2D()(model)
+    model = Dropout(0.3)(model)
+    model = Dense(500, activation='relu')(model)
+    model = Dense(500, activation='relu')(model)
 
-        output = Dense(n_categories, activation='softmax')(model)
-        model = Model(inputs=base_model.input, outputs=output)
-        return model
+    output = Dense(n_categories, activation='softmax')(model)
+    model = Model(inputs=base_model.input, outputs=output)
+    return model
+
 
 
 def print_model_properties(model, indices = 0):
@@ -143,7 +150,7 @@ def change_trainable_layers(model, trainable_index):
         
 
 
-def create_callbacks(file_path = "./../logs-", patience = 3):
+def create_callbacks(file_path = "./../logs/", patience = 3):
     tensorboard = TensorBoard(log_dir= file_path+datetime.datetime.now().strftime("%m%d%Y%H%M%S"),
                                 histogram_freq=0,
                                 write_graph=False,
@@ -153,6 +160,18 @@ def create_callbacks(file_path = "./../logs-", patience = 3):
     return tensorboard, early_stopping
 
 
+
+def evaluate_model(model, holdout_generator):
+    """
+    evaluates model on holdout data
+    params: model to evaluate
+    Returns: [loss, accuracy]
+        """
+
+    metrics = model.evaluate(holdout_generator,
+                                        use_multiprocessing=True,
+                                        verbose=1)
+    return metrics
 
 
 

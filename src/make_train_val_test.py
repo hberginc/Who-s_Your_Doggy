@@ -31,6 +31,26 @@ Great_Dane = '/n02109047-Great_Dane'
 pug = '/n02110958-pug'
 standard_poodle = '/n02113799-standard_poodle'
 Chow = '/n02112137-chow'
+os.makedirs(root_dir +'/train' + Chihuahua)
+os.makedirs(root_dir +'/val' + Chihuahua)
+os.makedirs(root_dir +'/test' + Chihuahua)
+
+
+os.makedirs(root_dir +'/train' + Pekinese)
+os.makedirs(root_dir +'/val' + Pekinese)
+os.makedirs(root_dir +'/test' + Pekinese)
+
+os.makedirs(root_dir +'/train' + Maltese)
+os.makedirs(root_dir +'/val' + Maltese)
+os.makedirs(root_dir +'/test' + Maltese)
+
+os.makedirs(root_dir +'/train' + Japanese_spaniel)
+os.makedirs(root_dir +'/val' + Japanese_spaniel)
+os.makedirs(root_dir +'/test' + Japanese_spaniel)
+
+os.makedirs(root_dir +'/train' + Shih_Tzu)
+os.makedirs(root_dir +'/val' + Shih_Tzu)
+os.makedirs(root_dir +'/test' + Shih_Tzu)
 
 os.makedirs(root_dir +'/train' + Blenheim_spaniel)
 os.makedirs(root_dir +'/val' + Blenheim_spaniel)
@@ -114,12 +134,12 @@ os.makedirs(root_dir +'/test' + Chow)
 
 
 # Creating partitions of the data after shuffeling
-currentCls = Blenheim_spaniel
+currentCls = Chihuahua
 src = root_dir+currentCls # Folder to copy images from
 allFileNames = os.listdir(src)
 np.random.shuffle(allFileNames)
 train_FileNames, val_FileNames, test_FileNames = np.split(np.array(allFileNames),
-                                                          [int(len(allFileNames)*0.7), int(len(allFileNames)*0.85)])
+                                                          [int(len(allFileNames)*0.85), int(len(allFileNames)*0.6)])
 train_FileNames = [src+'/'+ name for name in train_FileNames.tolist()]
 val_FileNames = [src+'/' + name for name in val_FileNames.tolist()]
 test_FileNames = [src+'/' + name for name in test_FileNames.tolist()]
@@ -129,8 +149,8 @@ print('Validation: ', len(val_FileNames))
 print('Testing: ', len(test_FileNames))
 # Copy-pasting images
 for name in train_FileNames:
-    shutil.copy(name,  "images/Images/train"+currentCls)
+    shutil.copy(name,  "../../images/Images/train"+currentCls)
 for name in val_FileNames:
-    shutil.copy(name,  "images/Images/val"+currentCls)
+    shutil.copy(name,  "../../images/Images/val"+currentCls)
 for name in test_FileNames:
-    shutil.copy(name, "images/Images/test"+currentCls)
+    shutil.copy(name, "../../images/Images/test"+currentCls)
