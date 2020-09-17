@@ -31,6 +31,14 @@ Great_Dane = '/n02109047-Great_Dane'
 pug = '/n02110958-pug'
 standard_poodle = '/n02113799-standard_poodle'
 Chow = '/n02112137-chow'
+
+
+lst = [Chihuahua,Japanese_spaniel, Maltese, Pekinese, Shih_Tzu, Blenheim_spaniel,  Papillon, 
+Rhodesian_ridgeback, Basset, Bloodhound, Whippet, Boston_bull, Standard_schnauzer, Scotch_terrier, 
+ Lab, Golden, English_setter, Kuvasz, Rottweiler, German_Shepherd, Doberman, Great_Dane, pug, standard_poodle,
+ Chow]
+
+
 os.makedirs(root_dir +'/train' + Chihuahua)
 os.makedirs(root_dir +'/val' + Chihuahua)
 os.makedirs(root_dir +'/test' + Chihuahua)
@@ -133,24 +141,29 @@ os.makedirs(root_dir +'/val' + Chow)
 os.makedirs(root_dir +'/test' + Chow)
 
 
+
 # Creating partitions of the data after shuffeling
-currentCls = Chihuahua
-src = root_dir+currentCls # Folder to copy images from
-allFileNames = os.listdir(src)
-np.random.shuffle(allFileNames)
-train_FileNames, val_FileNames, test_FileNames = np.split(np.array(allFileNames),
-                                                          [int(len(allFileNames)*0.85), int(len(allFileNames)*0.6)])
-train_FileNames = [src+'/'+ name for name in train_FileNames.tolist()]
-val_FileNames = [src+'/' + name for name in val_FileNames.tolist()]
-test_FileNames = [src+'/' + name for name in test_FileNames.tolist()]
-print('Total images: ', len(allFileNames))
-print('Training: ', len(train_FileNames))
-print('Validation: ', len(val_FileNames))
-print('Testing: ', len(test_FileNames))
-# Copy-pasting images
-for name in train_FileNames:
-    shutil.copy(name,  "../../images/Images/train"+currentCls)
-for name in val_FileNames:
-    shutil.copy(name,  "../../images/Images/val"+currentCls)
-for name in test_FileNames:
-    shutil.copy(name, "../../images/Images/test"+currentCls)
+for dog in lst:
+    currentCls = dog
+    src = root_dir+currentCls # Folder to copy images from
+    allFileNames = os.listdir(src)
+    np.random.shuffle(allFileNames)
+    train_FileNames, val_FileNames, test_FileNames = np.split(np.array(allFileNames),
+                                                            [int(len(allFileNames)*0.7), int(len(allFileNames)*0.8)])
+    train_FileNames = [src+'/'+ name for name in train_FileNames.tolist()]
+    val_FileNames = [src+'/' + name for name in val_FileNames.tolist()]
+    test_FileNames = [src+'/' + name for name in test_FileNames.tolist()]
+    print('Total images: ', len(allFileNames))
+    print('Training: ', len(train_FileNames))
+    print('Validation: ', len(val_FileNames))
+    print('Testing: ', len(test_FileNames))
+    # Copy-pasting images
+    for name in train_FileNames:
+        shutil.copy(name,  "../../images/Images/train"+currentCls)
+    for name in val_FileNames:
+        shutil.copy(name,  "../../images/Images/val"+currentCls)
+    for name in test_FileNames:
+        shutil.copy(name, "../../images/Images/test"+currentCls)
+
+
+

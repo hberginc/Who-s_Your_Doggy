@@ -29,7 +29,7 @@ import time
 
 
 
-def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', holdout_dir =  '../../images/Images/test',  batch_size = 16):
+def create_data_gens(target_size = (150,150) , train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', holdout_dir =  '../../images/Images/test',  batch_size = 16):
     '''
     this is the augmentation configuration we will use for training
     PARAMS: train, val, holdout dirs are directories geared toward the storage of such data
@@ -58,24 +58,26 @@ def create_data_gens(train_dir = '../../images/Images/train', val_dir = '../../i
     train_generator = train_datagen.flow_from_directory(
             train_dir, 
             shuffle=True, # this is the target directory
-            target_size=(150, 150),  # all images will be resized to 150x150
+            target_size=target_size,  # all images will be resized to 150x150
             batch_size=batch_size,
-            class_mode='categorical')  # since we use CategoricalCrossentropy loss, we need categorical labels
+            class_mode='categorical')# since we use CategoricalCrossentropy loss, we need categorical labels
 
     # this is a similar generator, for validation data
     validation_generator = test_datagen.flow_from_directory(
             val_dir,
-            target_size=(150, 150),
+            target_size=target_size,
             batch_size=batch_size,
-            class_mode='categorical')
+            class_mode='categorical',
+            shuffle=False)
 
     h_out = ImageDataGenerator(rescale=1./255)
     # this is a similar generator, for validation data
     holdout_generator = h_out.flow_from_directory(
             holdout_dir,
-            target_size=(150, 150),
+            target_size=target_size,
             batch_size=batch_size,
-            class_mode='categorical')
+            class_mode='categorical',
+            shuffle=False)
 
     return train_generator, validation_generator, holdout_generator
 
