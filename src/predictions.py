@@ -1,19 +1,21 @@
 
 from build_models import *
 
-
 def get_preds(model, holdout_generator):
     pred = model.predict(holdout_generator,verbose=1)
     return pred
 
 def get_real_pred(predictions, holdout_generator):
-    predicted_class_indices = np.argmax(pred,axis=1)
+    predicted_class_indices = np.argmax(predictions,axis=1)
     labels = holdout_generator.class_indices
     labels = dict((v,k) for k,v in labels.items())
     predictions = [labels[k] for k in predicted_class_indices]
     real_classes = holdout_generator.classes
     real_labels = [labels[k] for k in real_classes]
+    predictions = ['-'.join(lab.split('-')[1:]) for lab in predictions]
+    real_labels = ['-'.join(lab.split('-')[1:]) for lab in real_labels]
     return predictions, real_labels
+
 
 
 if __name__ == '__main__':

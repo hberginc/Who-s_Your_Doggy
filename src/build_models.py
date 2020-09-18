@@ -13,10 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.utils import plot_model
 import os
-
 import warnings
 warnings.filterwarnings("ignore")
-
 import matplotlib.image as mpimg
 import pathlib
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
@@ -59,24 +57,20 @@ def create_data_gens(target_size = (229,229), train_dir = '../../images/Images/t
             shuffle=True, # this is the target directory
             target_size=target_size,  # all images will be resized to 150x150
             batch_size=batch_size,
-            class_mode='categorical')  # since we use CategoricalCrossentropy loss, we need categorical labels
+            class_mode='categorical',
+            seed = 42)  # since we use CategoricalCrossentropy loss, we need categorical labels
 
     # this is a similar generator, for validation data
     validation_generator = test_datagen.flow_from_directory(
             val_dir,
             target_size=target_size,
-            batch_size=batch_size,
-            class_mode='categorical')
+            batch_size=185,
+            class_mode='categorical',
+            shuffle = False,
+            seed = 42)
 
-    h_out = ImageDataGenerator(rescale=1./255)
-    # this is a similar generator, for validation data
-    holdout_generator = h_out.flow_from_directory(
-            holdout_dir,
-            target_size=target_size,
-            batch_size=99,
-            class_mode='categorical')
 
-    return train_generator, validation_generator, holdout_generator
+    return train_generator, validation_generator
 
 
 def basic_cnn(n_categs = 5):
@@ -190,8 +184,8 @@ if __name__ == '__main__':
     early_stopping = EarlyStopping(patience = 2)
     # modified for Tensorboard
 
-    change_trainable_layers(model, 60)
 
+    change_trainable_layers(model, 60)
     model.compile(optimizer=Nadam(lr=0.001), loss=['categorical_crossentropy'], metrics=['accuracy', 'top_k_categorical_accuracy'])
 
     Xception_history1 = model.fit(train_generator,

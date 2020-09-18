@@ -1,4 +1,4 @@
-# # Creating Train / Val / Test folders (One time use)
+# # Creating Train / Val folders (One time use)
 import os
 import shutil
 import numpy as np
@@ -150,7 +150,7 @@ for dog in lst:
     np.random.shuffle(allFileNames)
 
     train_FileNames, val_FileNames, test_FileNames = np.array_split((allFileNames),
-                                                            [int(len(allFileNames)*0.96), int(len(allFileNames)*0.98)])
+                                                            [int(len(allFileNames)*0.96), int(len(allFileNames)*0.96)])
     train_FileNames = [src+'/'+ name for name in train_FileNames.tolist()]
     val_FileNames = [src+'/' + name for name in val_FileNames.tolist()]
     test_FileNames = [src+'/' + name for name in test_FileNames.tolist()]
