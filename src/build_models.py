@@ -19,22 +19,21 @@ warnings.filterwarnings("ignore")
 
 import matplotlib.image as mpimg
 import pathlib
-from tensorflow.keras.applications.xception import preprocess_input
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
-import tensorflow as tf
 from tensorflow.keras.applications import VGG16, Xception
+from tensorflow.keras.optimizer import Nadam, adam
 from datetime import datetime
 import datetime
 import time
 
 
 
-def create_data_gens(target_size = (150,150) , train_dir = '../../images/Images/train1', val_dir = '../../images/Images/val1', holdout_dir =  '../../images/Images/test1',  batch_size = 16):
+def create_data_gens(target_size = (229,229), train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', holdout_dir =  '../../images/Images/test',  batch_size = 16):
     '''
     this is the augmentation configuration we will use for training
     PARAMS: train, val, holdout dirs are directories geared toward the storage of such data
 
-    all images are resized to (150,150)
+    all images are resized to (229,229)
 
     RETURNS:
     each image generator in order train, val, holdout
@@ -60,27 +59,22 @@ def create_data_gens(target_size = (150,150) , train_dir = '../../images/Images/
             shuffle=True, # this is the target directory
             target_size=target_size,  # all images will be resized to 150x150
             batch_size=batch_size,
-            class_mode='categorical',
-            seed = 42)# since we use CategoricalCrossentropy loss, we need categorical labels
+            class_mode='categorical')  # since we use CategoricalCrossentropy loss, we need categorical labels
 
     # this is a similar generator, for validation data
     validation_generator = test_datagen.flow_from_directory(
             val_dir,
             target_size=target_size,
             batch_size=batch_size,
-            class_mode='categorical',
-            shuffle=False,
-            seed = 42)
+            class_mode='categorical')
 
     h_out = ImageDataGenerator(rescale=1./255)
-        # this is a similar generator, for validation data
+    # this is a similar generator, for validation data
     holdout_generator = h_out.flow_from_directory(
-                holdout_dir,
-                target_size=target_size,
-                batch_size= 665,
-                class_mode='categorical',
-                shuffle=False,
-                seed = 42)
+            holdout_dir,
+            target_size=target_size,
+            batch_size=99,
+            class_mode='categorical')
 
     return train_generator, validation_generator, holdout_generator
 
@@ -104,8 +98,6 @@ def basic_cnn(n_categs = 5):
     model.add(Dropout(0.5))
     model.add(Dense(n_categs))
     model.add(Activation('softmax'))
-
-
     model.compile(optimizer='adam', loss=['categorical_crossentropy'], metrics=['accuracy', 'top_k_categorical_accuracy'])
 
     return model
@@ -116,7 +108,6 @@ def basic_transfer_model(input_size, n_categories, weights = 'imagenet', trans_m
     base_model = trans_model(weights=weights,
                         include_top=False,
                         input_shape=input_size)
-    
     model = base_model.output
     # add new head
     model = GlobalAveragePooling2D()(model)
@@ -142,7 +133,6 @@ def create_new_transfer_model(input_size, n_categories, weights = 'imagenet', tr
     return model
 
 
-
 def print_model_properties(model, indices = 0):
      for i, layer in enumerate(model.layers[indices:]):
         print("Layer {} | Name: {} | Trainable: {}".format(i+indices, layer.name, layer.trainable))
@@ -154,7 +144,6 @@ def change_trainable_layers(model, trainable_index):
         layer.trainable = True
         
 
-
 def create_callbacks(file_path = "./../logs/", patience = 3):
     tensorboard = TensorBoard(log_dir= file_path+datetime.datetime.now().strftime("%m%d%Y%H%M%S"),
                                 histogram_freq=0,
@@ -163,7 +152,6 @@ def create_callbacks(file_path = "./../logs/", patience = 3):
     early_stopping = EarlyStopping(restore_best_weights = True, patience = patience, monitor='val_loss')
     
     return tensorboard, early_stopping
-
 
 
 def evaluate_model(model, holdout_generator):
@@ -178,15 +166,18 @@ def evaluate_model(model, holdout_generator):
                                         verbose=1)
     return metrics
 
+def load_final_model(mod_file_path = "../models_and_weights/Xception_mod3_run2.h5", weights = '../models_and_weights/weights_Xception_mod3_run2' ):
+    model = load_model(mod_file_path)
+    model.load_weights(weights)
+    return model
+
 
 
 if __name__ == '__main__':
-
+    model = load_final_model()
 
     train_generator, validation_generator, holdout_generator = create_data_gens()
 
-    #first basic model saved weights
-    model = basic_cnn()
         #  Added for Tensorboard
     tensorboard = TensorBoard(log_dir='./logs',
                             histogram_freq=2,
@@ -194,20 +185,22 @@ if __name__ == '__main__':
                             write_graph=True,
                             write_grads=True,
                             write_images=True,
-
                             ) 
+
     early_stopping = EarlyStopping(patience = 2)
     # modified for Tensorboard
 
-    epochs = 10
-    history = model.fit(
-        train_generator,
-        steps_per_epoch=2000 // 16,
-        epochs=epochs,
-        validation_data=validation_generator,
-        validation_steps=800 // 16,
-        verbose = 1,
-        callbacks = [tensorboard, early_stopping])
+    change_trainable_layers(model, 60)
+
+    model.compile(optimizer=Nadam(lr=0.001), loss=['categorical_crossentropy'], metrics=['accuracy', 'top_k_categorical_accuracy'])
+
+    Xception_history1 = model.fit(train_generator,
+                steps_per_epoch=3000 // 16,
+                epochs=10,
+                validation_data=validation_generator,
+                validation_steps=600 // 16,
+                verbose = 1)
+
 
     # !tensorboard --logdir=logs/ --port=8889
 

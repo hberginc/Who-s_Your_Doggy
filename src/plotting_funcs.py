@@ -6,6 +6,32 @@ import warnings
 warnings.filterwarnings("ignore")
 import matplotlib.image as mpimg
 import pathlib
+from predictions import *
+from build_models import *
+
+def find_missclass_indx(real_labels, prediction_labels):
+    incorrect_index = []
+    for ind, (i, j) in enumerate(zip(real_labels, prediction_labels)):
+      if i != j:
+        print('True- {}, \nPred- {}\n'.format(i,j))
+        incorrect_index.append(ind)
+    return incorrect_index
+
+
+def plot_missclass(holdout_generator, predictions):
+    x,y = holdout_generator.next()
+    prediction_labels, real_labels = get_real_pred(predictions, holdout_generator)
+    
+    incorrect_index = find_missclass_indx(real_labels, prediction_labels)
+    fig, axs = plt.subplots(4,2, figsize = (20,20))
+    ax = axs.flatten()
+    for i, ind in enumerate(incorrect_index):
+        rl = real_labels[ind]
+        pl = prediction_labels[ind]
+        image = x[ind]
+        ax[i].set_title('Actual: {}, \n Predicted: {}'.format(rl, pl))
+        ax[i].imshow(image)
+        ax[i].axis('off')
 
 
 def show_imgs(direct, num_imgs=20):
@@ -45,18 +71,3 @@ def plot_acc_loss_per_epoch(fit_model, epochs=10, file_name = 'train_acc_loss_ba
     plt.savefig(file_name)
     plt.show()
 
-
-def plot_pred_actual(y_test, target_labels, predictions, x_test, test_predictions):
-    import random
-    plt.figure(figsize=(30,40))
-    for counter, i in enumerate(random.sample(range(0, len(y_test)), 30)): # random 30 images
-        plt.subplot(6, 5, counter+1)
-        plt.subplots_adjust(hspace=0.6)
-        actual = str(target_labels[i])
-        predicted = str(predictions[i])
-        conf = str(max(test_predictions[i]))
-        plt.imshow(x_test[i]/255.0)
-        plt.axis('off')
-        plt.title('Actual: ' + actual + '\nPredict: ' + predicted + '\nConf: ' + conf, fontsize=18)
-        
-    plt.show()

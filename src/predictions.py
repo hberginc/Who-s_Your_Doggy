@@ -2,11 +2,6 @@
 from build_models import *
 
 
-def load_final_model(mod_file_path = "../models_and_weights/Xception_mod3_run2.h5", weights = '../models_and_weights/weights_Xception_mod3_run2' ):
-    model = load_model(mod_file_path)
-    model.load_weights(weights)
-    return model
-
 def get_preds(model, holdout_generator):
     pred = model.predict(holdout_generator,verbose=1)
     return pred
