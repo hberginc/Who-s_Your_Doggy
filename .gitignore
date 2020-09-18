@@ -1,6 +1,10 @@
 #models dir
 models_and_weights/
 
+
+#jup cache
+.ipynb_checkpoints/
+
 #created from utilizing VS code auto generated
 .vscode
 

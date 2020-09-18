@@ -148,8 +148,9 @@ for dog in lst:
     src = root_dir+currentCls # Folder to copy images from
     allFileNames = os.listdir(src)
     np.random.shuffle(allFileNames)
-    train_FileNames, val_FileNames, test_FileNames = np.split(np.array(allFileNames),
-                                                            [int(len(allFileNames)*0.7), int(len(allFileNames)*0.8)])
+
+    train_FileNames, val_FileNames, test_FileNames = np.array_split((allFileNames),
+                                                            [int(len(allFileNames)*0.96), int(len(allFileNames)*0.98)])
     train_FileNames = [src+'/'+ name for name in train_FileNames.tolist()]
     val_FileNames = [src+'/' + name for name in val_FileNames.tolist()]
     test_FileNames = [src+'/' + name for name in test_FileNames.tolist()]
