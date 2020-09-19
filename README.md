@@ -8,6 +8,7 @@ The day you bring home your furry ball of love from the animal shelter is typica
 
 Personally, classifying my own rez dog with more accurate breeds than the generic, "Australian Shepherd Mix", is my personal motivation for the beginning of the project. 
 
+![picture](visuals/rees.png)
 
 ## About the data:
 
@@ -29,8 +30,13 @@ The final 25 breeds I chose to classify are:
 
 ## Machine Learning Modeling with CNN
 
-### Image modifications for Training
+### Image Data Generator for Training
 
+Before training a model, we have to determine what information we want it to learn. Utilizing an ImageDataGenerator, I generated batches of augmented images that look similar to the following:
+
+![picture](visuals/chow.png)
+
+Changing the aspects of the image gives the machine learning model more of an opportunity to find dynamic features within the dog that are not particular to the area that feature occures within the picture itself. 
 
 ### Baseline CNN
 
