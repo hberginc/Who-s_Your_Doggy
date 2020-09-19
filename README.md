@@ -1,4 +1,6 @@
 # Who's Your Doggy
+![picture](visuals/dogs.jpeg)
+
 
 ## Motivation
 
@@ -8,7 +10,7 @@ The day you bring home your furry ball of love from the animal shelter is typica
 
 Personally, classifying my own rez dog with more accurate breeds than the generic, "Australian Shepherd Mix", is my personal motivation for the beginning of the project. 
 
-![picture](visuals/rees.png)
+![picture](visuals/rees_unknown.png)
 
 ## About the data:
 
