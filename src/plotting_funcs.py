@@ -33,7 +33,16 @@ def plot_missclass(holdout_generator, predictions):
         ax[i].imshow(image)
         ax[i].axis('off')
 
-
+def plot_one_img(img_path, title, save_path=None):
+    img = mpimg.imread(img_path)
+    plt.imshow(img)
+    plt.title(title, fontsize = 15)
+    plt.axis('off')
+    plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path)
+    plt.show();
+    
 def show_imgs(direct, num_imgs=20):
     images = os.listdir(direct)[:num_imgs]
     plt.figure(figsize=(18,18))
