@@ -19,7 +19,7 @@ import matplotlib.image as mpimg
 import pathlib
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
 from tensorflow.keras.applications import VGG16, Xception
-from tensorflow.keras.optimizer import Nadam, adam
+from tensorflow.keras.optimizers import Nadam
 from datetime import datetime
 import datetime
 import time
