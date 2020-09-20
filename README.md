@@ -45,8 +45,17 @@ Changing the aspects of the image gives the machine learning model more of an op
 
 ### Transfer Learning
 
-#### Model Comparisons
+![picture](visuals/activation_one.png)
 
+![picture](visuals/activation_ten.png)
+
+![picture](visuals/activation_hund_thirty.png)
+
+
+#### Model Comparisons
+Xception:
+
+![picture](visuals/cnn_vis.gif)
 
 #### Final Optimized Xception
-
+![picture](visuals/wrong_pred.png)

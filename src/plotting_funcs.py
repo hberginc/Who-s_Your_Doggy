@@ -6,8 +6,8 @@ import warnings
 warnings.filterwarnings("ignore")
 import matplotlib.image as mpimg
 import pathlib
-from predictions import *
-from build_models import *
+
+from predict_funcs import get_real_pred
 
 def find_missclass_indx(real_labels, prediction_labels):
     incorrect_index = []
@@ -16,7 +16,6 @@ def find_missclass_indx(real_labels, prediction_labels):
         print('True- {}, \nPred- {}\n'.format(i,j))
         incorrect_index.append(ind)
     return incorrect_index
-
 
 def plot_missclass(holdout_generator, predictions):
     x,y = holdout_generator.next()
@@ -79,4 +78,26 @@ def plot_acc_loss_per_epoch(fit_model, epochs=10, file_name = 'train_acc_loss_ba
     plt.title('Training and Validation Loss')
     plt.savefig(file_name)
     plt.show()
+
+
+
+
+def get_activations(model, validation_generator, n = 5):
+    preds = model.predict(validation_generator)
+    layer_outputs = [layer.output for layer in model.layers]
+    activation_model = Model(inputs=model.input, outputs=layer_outputs)
+    X_train, y_train = validation_generator.next()
+    activations = activation_model.predict(X_train[n].reshape(1,229, 229, 3))
+    return activations
+    
+def display_activation_layer(activations, n_imgs, act_index, ax = 'ax', figsize=(8,4), title = None): 
+    fig, ax = plt.subplots(2, n_imgs//2, figsize= figsize)
+    ax = ax.flatten()
+    activation = activations[act_index]
+    activation_index=0
+    for im in range(n_imgs):
+        ax[im].imshow(activation[0, :, :, activation_index])
+        activation_index += 1
+        ax[im].axis('off')
+    fig.suptitle(title, fontsize = 20)
 

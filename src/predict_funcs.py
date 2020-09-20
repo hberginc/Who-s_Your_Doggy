@@ -1,6 +1,4 @@
 
-from build_models import *
-
 def get_preds(model, holdout_generator):
     pred = model.predict(holdout_generator,verbose=1)
     return pred
