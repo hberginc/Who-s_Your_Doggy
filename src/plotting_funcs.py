@@ -7,7 +7,7 @@ warnings.filterwarnings("ignore")
 import matplotlib.image as mpimg
 import pathlib
 
-from predict_funcs import get_real_pred
+# from predict_funcs import get_real_pred
 
 def find_missclass_indx(real_labels, prediction_labels):
     incorrect_index = []
@@ -89,7 +89,7 @@ def get_activations(model, validation_generator, n = 5):
     X_train, y_train = validation_generator.next()
     activations = activation_model.predict(X_train[n].reshape(1,229, 229, 3))
     return activations
-    
+
 def display_activation_layer(activations, n_imgs, act_index, ax = 'ax', figsize=(8,4), title = None): 
     fig, ax = plt.subplots(2, n_imgs//2, figsize= figsize)
     ax = ax.flatten()

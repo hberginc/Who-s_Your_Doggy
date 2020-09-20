@@ -41,9 +41,29 @@ Before training a model, we have to determine what information we want it to lea
 Changing the aspects of the image gives the machine learning model more of an opportunity to find dynamic features within the dog that are not particular to the area that feature occures within the picture itself. 
 
 ### Baseline CNN
+Layer 0 | Name: conv2d | Trainable: True
+Layer 1 | Name: activation | Trainable: True
+Layer 2 | Name: max_pooling2d | Trainable: True
+Layer 3 | Name: conv2d_1 | Trainable: True
+Layer 4 | Name: activation_1 | Trainable: True
+Layer 5 | Name: max_pooling2d_1 | Trainable: True
+Layer 6 | Name: conv2d_2 | Trainable: True
+Layer 7 | Name: activation_2 | Trainable: True
+Layer 8 | Name: max_pooling2d_2 | Trainable: True
+Layer 9 | Name: flatten | Trainable: True
+Layer 10 | Name: dense | Trainable: True
+Layer 11 | Name: activation_3 | Trainable: True
+Layer 12 | Name: dropout | Trainable: True
+Layer 13 | Name: dense_1 | Trainable: True
+Layer 14 | Name: activation_4 | Trainable: True
+
 
 
 ### Transfer Learning
+Xception:
+
+
+![picture](visuals/cnn_vis.gif)
 
 ![picture](visuals/activation_one.png)
 
@@ -52,10 +72,18 @@ Changing the aspects of the image gives the machine learning model more of an op
 ![picture](visuals/activation_hund_thirty.png)
 
 
-#### Model Comparisons
-Xception:
-
-![picture](visuals/cnn_vis.gif)
-
 #### Final Optimized Xception
+![picture](visuals/model_improvements.png)
+
+
+
+Model Arcitecture 
+
 ![picture](visuals/wrong_pred.png)
+
+
+
+#### Determine Rees' Breeds
+
+!['picture'](visuals/rees.png)
+
