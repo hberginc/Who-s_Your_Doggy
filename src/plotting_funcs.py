@@ -7,7 +7,22 @@ warnings.filterwarnings("ignore")
 import matplotlib.image as mpimg
 import pathlib
 
-# from predict_funcs import get_real_pred
+
+def get_preds(model, holdout_generator):
+    pred = model.predict(holdout_generator,verbose=1)
+    return pred
+
+def get_real_pred(predictions, holdout_generator):
+    predicted_class_indices = np.argmax(predictions,axis=1)
+    labels = holdout_generator.class_indices
+    labels = dict((v,k) for k,v in labels.items())
+    predictions = [labels[k] for k in predicted_class_indices]
+    real_classes = holdout_generator.classes
+    real_labels = [labels[k] for k in real_classes]
+    predictions = ['-'.join(lab.split('-')[1:]) for lab in predictions]
+    real_labels = ['-'.join(lab.split('-')[1:]) for lab in real_labels]
+    return predictions, real_labels
+
 
 def find_missclass_indx(real_labels, prediction_labels):
     incorrect_index = []
@@ -17,12 +32,11 @@ def find_missclass_indx(real_labels, prediction_labels):
         incorrect_index.append(ind)
     return incorrect_index
 
-def plot_missclass(holdout_generator, predictions):
+def plot_missclass(holdout_generator, predictions, axs = 'ax'):
     x,y = holdout_generator.next()
     prediction_labels, real_labels = get_real_pred(predictions, holdout_generator)
     
     incorrect_index = find_missclass_indx(real_labels, prediction_labels)
-    fig, axs = plt.subplots(4,2, figsize = (20,20))
     ax = axs.flatten()
     for i, ind in enumerate(incorrect_index):
         rl = real_labels[ind]
@@ -31,6 +45,7 @@ def plot_missclass(holdout_generator, predictions):
         ax[i].set_title('Actual: {}, \n Predicted: {}'.format(rl, pl))
         ax[i].imshow(image)
         ax[i].axis('off')
+
 
 def plot_one_img(img_path, title, save_path=None):
     img = mpimg.imread(img_path)
