@@ -23,7 +23,6 @@ def get_real_pred(predictions, holdout_generator):
     real_labels = ['-'.join(lab.split('-')[1:]) for lab in real_labels]
     return predictions, real_labels
 
-
 def find_missclass_indx(real_labels, prediction_labels):
     incorrect_index = []
     for ind, (i, j) in enumerate(zip(real_labels, prediction_labels)):
@@ -93,8 +92,6 @@ def plot_acc_loss_per_epoch(fit_model, epochs=10, file_name = 'train_acc_loss_ba
     plt.title('Training and Validation Loss')
     plt.savefig(file_name)
     plt.show()
-
-
 
 
 def get_activations(model, validation_generator, n = 5):

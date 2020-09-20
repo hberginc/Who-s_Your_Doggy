@@ -1,5 +1,4 @@
 # Who's Your Doggy
-![picture](visuals/dogs.jpeg)
 
 
 ## Motivation
@@ -10,7 +9,7 @@ The day you bring home your furry ball of love from the animal shelter is typica
 
 Personally, classifying my own rez dog with more accurate breeds than the generic, "Australian Shepherd Mix", is my personal motivation for the beginning of the project. 
 
-![picture](visuals/rees_unknown.png)
+![picture](visuals/animal_imgs/rees_unknown.png)
 
 ## About the data:
 
@@ -28,7 +27,7 @@ Due to imense ammount of dog classifications, I started initially with only five
 
 The final 25 breeds I chose to classify are: 
 
-![picture](visuals/breeds.png)
+![picture](visuals/animal_imgs/breeds.png)
 
 ## Machine Learning Modeling with CNN
 
@@ -36,34 +35,35 @@ The final 25 breeds I chose to classify are:
 
 Before training a model, we have to determine what information we want it to learn. Utilizing an ImageDataGenerator, I generated batches of augmented images that look similar to the following:
 
-![picture](visuals/chow.png)
+![picture](visuals/animal_imgs/chow.png)
 
 Changing the aspects of the image gives the machine learning model more of an opportunity to find dynamic features within the dog that are not particular to the area that feature occures within the picture itself. 
 
 ### Baseline CNN
-Layer 0 | Name: conv2d | Trainable: True
-Layer 1 | Name: activation | Trainable: True
-Layer 2 | Name: max_pooling2d | Trainable: True
-Layer 3 | Name: conv2d_1 | Trainable: True
-Layer 4 | Name: activation_1 | Trainable: True
-Layer 5 | Name: max_pooling2d_1 | Trainable: True
-Layer 6 | Name: conv2d_2 | Trainable: True
-Layer 7 | Name: activation_2 | Trainable: True
-Layer 8 | Name: max_pooling2d_2 | Trainable: True
-Layer 9 | Name: flatten | Trainable: True
-Layer 10 | Name: dense | Trainable: True
-Layer 11 | Name: activation_3 | Trainable: True
-Layer 12 | Name: dropout | Trainable: True
-Layer 13 | Name: dense_1 | Trainable: True
-Layer 14 | Name: activation_4 | Trainable: True
 
+I began the project with a very basic Convolutional Nerual Network. 
+The Architecture of this basic CNN involved a series of r convolutional, pooling and activation layers. To end the process, a flatten, dense, dropout and final activation layer to show the model to produce 25 different predictions, one for each breed. 
+
+![picture](visuals/NN_viz/cnn_basic_.jpeg)
+
+The Image below gives a quick exampl of how the modle reivews the input vectorized image to learn important features
+
+![picture](visuals/NN_viz/cnn_vis.gif)
+
+This model was never optimized and started off producing the following metrics. 
+
+![picture](visuals/model_progress/basic_cnn_compare.png)
+
+With focused optimization techniques, I can image this model eventually producing great metrics when visualizing the original 20 epochs. However, a quicker method to gaining better accuracy scores quicker is the move toward transfer learning. 
 
 
 ### Transfer Learning
+Utilizing a mixtue of Transfer Learning Techniques, I settled on optimizing the model Xception.
+
+![picture](visuals/model_progress/plus100_Xception290.png)
 Xception:
 
-
-![picture](visuals/cnn_vis.gif)
+Working further with the Xception model, here are some images give the layer. 
 
 ![picture](visuals/activation_one.png)
 
@@ -72,14 +72,22 @@ Xception:
 ![picture](visuals/activation_hund_thirty.png)
 
 
-#### Final Optimized Xception
-![picture](visuals/model_improvements.png)
+
+
+Noting that the validation data flattens out around 75-80% accuracy it was time to optimize. The following chart shows that the best model was trained with 53 Tranable features and a learning rate of 0.001. 
+
+![picture](visuals/model_progress/model_improvements.png)
 
 
 
-Model Arcitecture 
+### Final Predictions
 
-![picture](visuals/wrong_pred.png)
+![picture](visuals/model_progress/confusion_mtx.png)
+
+
+
+
+![picture](visuals/.png)
 
 
 
