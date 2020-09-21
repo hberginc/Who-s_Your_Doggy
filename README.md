@@ -52,7 +52,7 @@ The Image below gives a quick exampl of how the modle reivews the input vectoriz
 
 This model was never optimized and started off producing the following metrics. 
 
-![picture](visuals/model_progress/basic_cnn_compare.png)
+![picture](visuals/model_progress/cnn_100epochs2.png)
 
 With focused optimization techniques, I can image this model eventually producing great metrics when visualizing the original 20 epochs. However, a quicker method to gaining better accuracy scores quicker is the move toward transfer learning. 
 
@@ -84,14 +84,28 @@ Noting that the validation data flattens out around 75-80% accuracy it was time 
 
 ![picture](visuals/model_progress/confusion_mtx.png)
 
+The five hilighted values between 0 and 1 are the five incorrect classifications on m 185 validation set. Noting the differneces in the actual and predicted animals below shows the hilight on what areas the model is focusing on. 
 
 
+![picture](visuals/missclass/first_missclass.png)
+![picture](visuals/missclass/second_missclass.png)
+![picture](visuals/missclass/third_missclass.png)
+![picture](visuals/missclass/fourth_missclass.png)
+![picture](visuals/missclass/fifth_missclass.png)
 
-![picture](visuals/.png)
+
 
 
 
 #### Determine Rees' Breeds
+Utilizing multiple pictures of my mixed breed pup, I her top 5 breed categories according to my model and here are the results. 
 
-!['picture'](visuals/rees.png)
+!['picture'](visuals/animal_imgs/five_rees.png)
+Labrador Retriever, Whippet, Pug, Basset Hound, Bloodhound
+![picture](visuals/animal_imgs/top_five.png)
 
+
+
+#### Further Directions with this Model
+
+Love to create a flask app to classify other mutts like mine based on visual or a similar dog recommender. 
