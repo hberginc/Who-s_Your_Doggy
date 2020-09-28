@@ -32,6 +32,11 @@ from datetime import datetime
 import datetime
 import time
 
+from PIL import Image, ImageSequence
+import imageio
+import glob
+import build_models as bld
+
 
 
 
@@ -140,4 +145,41 @@ def display_activation_layer(activations, n_imgs, act_index, ax = 'ax', figsize=
         activation_index += 1
         ax[im].axis('off')
     fig.suptitle(title, fontsize = 20)
+
+def show_preview_imgs(direct, num_imgs=20):
+    images = os.listdir(direct)[:num_imgs]
+    for i in range(num_imgs):
+        #connect directory to selected breed path and image number
+        img = mpimg.imread(direct + '/'+ images[i])
+        plt.subplot(2, 4, i+1)
+        plt.imshow(img)
+        plt.axis('off')
+
+
+if __name__ == '__main__': 
+    #print image augmentations
+    plt.figure(figsize=(12,5))
+    plt.title('Boston Bull Augmentation', loc = 'center')
+    show_preview_imgs('../preview', num_imgs=8)
+    plt.tight_layout()
+    plt.show()
+    # plt.savefig('to_image_process_or_to_timeseries/visuals/chow.png')
+    
+    #print activation Layers
+    train_generator, validation_generator = bld.create_data_gens(target_size = (229,229), train_dir = "../../images/Images/train", 
+                                                val_dir = '../../images/Images/test', batch_size = 16)
+
+    model = load_model('../models_and_weights/models/Xception_mod3_run2.h5')
+    activations = get_activations(model, validation_generator, n=114)
+    display_activation_layer(activations, 6, 17, figsize=(9,6), title = 'Activation Layer 3')
+    plt.show();
+
+    png_dir = '../../previews/all/'
+    images = []
+    for file_name in os.listdir(png_dir):
+        if file_name.endswith('.jpeg'):
+            file_path = os.path.join(png_dir, file_name)
+            images.append(imageio.imread(file_path))
+    kargs = { 'duration': 1.5 }
+    imageio.mimsave('../visuals/animal_imgs/full.gif', images, **kargs)
 

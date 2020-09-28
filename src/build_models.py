@@ -1,4 +1,11 @@
-from tensorflow import keras
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+import warnings
+warnings.filterwarnings("ignore")
+import matplotlib.image as mpimg
+import pathlib
 from tensorflow.keras.preprocessing.image import (ImageDataGenerator, 
                                                   array_to_img, img_to_array, 
                                                   load_img) 
@@ -8,9 +15,6 @@ from tensorflow.keras.layers import Activation, Dropout, Flatten, Dense
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras import backend as K
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 from tensorflow.keras.utils import plot_model
 import os
 import warnings
@@ -23,7 +27,6 @@ from tensorflow.keras.optimizers import Nadam
 from datetime import datetime
 import datetime
 import time
-
 
 
 def create_data_gens(target_size = (229,229), train_dir = '../../images/Images/train', val_dir = '../../images/Images/val', holdout_dir =  '../../images/Images/test',  batch_size = 16):
@@ -68,12 +71,15 @@ def create_data_gens(target_size = (229,229), train_dir = '../../images/Images/t
             class_mode='categorical',
             shuffle = False,
             seed = 42)
-
-
     return train_generator, validation_generator
 
 
 def basic_cnn(n_categs = 5):
+    '''
+    input: how many categories you are classifying
+
+    returns: compiled model ready to fit
+    '''
     model = Sequential()
     model.add(Conv2D(32, (3, 3), input_shape=(150, 150, 3)))
     model.add(Activation('relu'))
@@ -98,6 +104,15 @@ def basic_cnn(n_categs = 5):
 
 
 def basic_transfer_model(input_size, n_categories, weights = 'imagenet', trans_model = VGG16):
+    '''
+    input: 
+    input_size = image/target size
+    n_categories = number of classifications
+    trans_model = name of tensorflow model to change top
+
+    returns:
+    model ready to compile
+    '''
     # note that the "top" is not included in the weights below
     base_model = trans_model(weights=weights,
                         include_top=False,
@@ -109,35 +124,24 @@ def basic_transfer_model(input_size, n_categories, weights = 'imagenet', trans_m
     model = Model(inputs=base_model.input, outputs=predictions)
     return model
 
-def create_new_transfer_model(input_size, n_categories, weights = 'imagenet', trans_model = Xception):
-    # note that the "top" is not included in the weights below
-    base_model = trans_model(weights=weights,
-                        include_top=False,
-                        input_shape=input_size)
-    
-    model = base_model.output
-
-    model = GlobalAveragePooling2D()(model)
-    model = Dropout(0.3)(model)
-    model = Dense(500, activation='relu')(model)
-    model = Dense(500, activation='relu')(model)
-
-    output = Dense(n_categories, activation='softmax')(model)
-    model = Model(inputs=base_model.input, outputs=output)
-    return model
-
-
 def print_model_properties(model, indices = 0):
+    '''
+    input: 
+    model = any model ready to fit, compile or predict
+    indices is wich layer/layers to view.... default(0) shows all
+
+    prints the layer properties of any NN model
+    '''
      for i, layer in enumerate(model.layers[indices:]):
         print("Layer {} | Name: {} | Trainable: {}".format(i+indices, layer.name, layer.trainable))
 
 def change_trainable_layers(model, trainable_index):
+
     for layer in model.layers[:trainable_index]:
         layer.trainable = False
     for layer in model.layers[trainable_index:]:
         layer.trainable = True
         
-
 def create_callbacks(file_path = "./../logs/", patience = 3):
     tensorboard = TensorBoard(log_dir= file_path+datetime.datetime.now().strftime("%m%d%Y%H%M%S"),
                                 histogram_freq=0,
@@ -146,7 +150,6 @@ def create_callbacks(file_path = "./../logs/", patience = 3):
     early_stopping = EarlyStopping(restore_best_weights = True, patience = patience, monitor='val_loss')
     
     return tensorboard, early_stopping
-
 
 def evaluate_model(model, holdout_generator):
     """
@@ -160,16 +163,8 @@ def evaluate_model(model, holdout_generator):
                                         verbose=1)
     return metrics
 
-def load_final_model(mod_file_path = "../models_and_weights/Xception_mod3_run2.h5", weights = '../models_and_weights/weights_Xception_mod3_run2' ):
-    model = load_model(mod_file_path)
-    model.load_weights(weights)
-    return model
-
-
 
 if __name__ == '__main__':
-    model = load_final_model()
-
     train_generator, validation_generator, holdout_generator = create_data_gens()
 
         #  Added for Tensorboard
