@@ -132,11 +132,10 @@ def print_model_properties(model, indices = 0):
 
     prints the layer properties of any NN model
     '''
-     for i, layer in enumerate(model.layers[indices:]):
+    for i, layer in enumerate(model.layers[indices:]):
         print("Layer {} | Name: {} | Trainable: {}".format(i+indices, layer.name, layer.trainable))
 
 def change_trainable_layers(model, trainable_index):
-
     for layer in model.layers[:trainable_index]:
         layer.trainable = False
     for layer in model.layers[trainable_index:]:
