@@ -1,5 +1,5 @@
 # Who's Your Doggy
-
+#### You are welcome to watch a **5 minute video** presentation of the project below found in the mp4 file above!
 
 ## Motivation
 
