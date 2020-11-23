@@ -45,7 +45,7 @@ The Image below gives a quick example of how the model reviews the input vectori
 
 Before throwing images into the convolutional neural network; performing some image augmentation is essential. Not only does this provide you with increased data with which to train, but it allows your model to do a better job at generalizing the dog's important features. 
 
-![picture](/home/heather/galvanize/Final_Capstone/to_image_process_or_to_timeseries/visuals/animal_imgs/chow.png)
+![picture](visuals/animal_imgs/chow.png)
 
 The image above shows an example of the types of image augmentations I utilized. 
 
