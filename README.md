@@ -73,7 +73,7 @@ Through little effort but much patience, training the model, Xception with a hig
 
 Over the course of the entire project, I began with my basic CNN, gaining a low accuracy of about 15%. Overall, trying out different transfer learning models like VGG16 and ResNet, I settled on focusing all of my energy on optimizing the Xception model. 
 
-![picture](/home/heather/galvanize/Final_Capstone/to_image_process_or_to_timeseries/visuals/model_progress/model_improvements.png)
+![picture](visuals/model_progress/model_improvements.png)
 
 
 
